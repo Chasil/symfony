@@ -14,7 +14,7 @@ final class Version20221010120058 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return 'Create Photo table and relate with user';
     }
 
     public function up(Schema $schema): void
