@@ -23,6 +23,17 @@
                             </div>
                         <input type="submit" value="Wyślij" class="form-control btn btn-success w-50 align-self-center" />
                         {{ form_end(form) }}
+
+                        {% for message in app.flashes('notice') %}
+                                <div class="alert alert-success">
+                                    {{ message }}
+                                </div>
+                        {% endfor %}
+                        {% for message in app.flashes('error') %}
+                            <div class="alert alert-danger">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>

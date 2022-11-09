@@ -39,6 +39,8 @@ class IndexController extends AbstractController
 
                     $em->persist($entityPhotos);
                     $em->flush();
+
+                    $this->addFlash('notice', 'Upload succeeded');
                 }
             }
         }
