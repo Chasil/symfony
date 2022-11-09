@@ -7,6 +7,7 @@ use App\Form\UploadPhotoType;
 use App\Repository\PhotoRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -22,14 +23,23 @@ class IndexController extends AbstractController
         if($form->isSubmitted() && $form->isValid()) {
             $em = $doctrine->getManager();
             if($this->getUser()) {
-                $entityPhotos = new Photo();
-                $entityPhotos->setFilename($form->get('filename')->getData());
-                $entityPhotos->setIsPublic($form->get('is_public')->getData());
-                $entityPhotos->setUploadedAt(new \DateTimeImmutable());
-                $entityPhotos->setUser($this->getUser());
 
-                $em->persist($entityPhotos);
-                $em->flush();
+                /** @var UploadedFile $pictureFileName */
+                $pictureFileName = $form->get('filename')->getData();
+                if($pictureFileName) {
+                    $originalFileName = pathinfo($pictureFileName->getClientOriginalName(), PATHINFO_FILENAME);
+                    $newFileName = $originalFileName .'_'. uniqid() .'.' . $pictureFileName->guessExtension();
+                    $pictureFileName->move('images/hosting', $newFileName);
+
+                    $entityPhotos = new Photo();
+                    $entityPhotos->setFilename($newFileName);
+                    $entityPhotos->setIsPublic($form->get('is_public')->getData());
+                    $entityPhotos->setUploadedAt(new \DateTimeImmutable());
+                    $entityPhotos->setUser($this->getUser());
+
+                    $em->persist($entityPhotos);
+                    $em->flush();
+                }
             }
         }
 
